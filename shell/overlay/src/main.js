@@ -1,4 +1,9 @@
 import "./otools/boot.js";
+// 把幻灯片版式占位提示（"Click to add title" 等，由 lib/pptx 产出并画进 SVG，
+// 处于 DOM 翻译层之外）也接进多语言。t 在切语言后由 onChange 触发整树重译，
+// 这里再把当前语言并入预览缓存键，确保提示语随语言刷新。
+import { t, locale } from "./otools/i18n.js";
+import { getPlaceholderPrompt } from "../lib/pptx/src/api/fn/slide-masters.ts";
 import { textEditHistory } from "./text-edit-history.js";
 import { TextFieldEdits, trackTextFields } from "./text-fields.js";
 import { createSlideAdvanceClock } from "./slide-advance-clock.js";
@@ -7998,10 +8003,17 @@ function canvasPreview(s) {
     slideFieldStamp(doc.pres, s),
     documentFontStamp(doc.pres),
     `${size.cx}x${size.cy}`,
+    locale(),
   ].join("|");
   const hit = cache.get(part);
   if (hit?.key === key) return hit.src;
-  const src = preview(doc.pres, s, null, { prompts: true });
+  // 占位提示语由 lib/pptx 产出（英文），经 t() 接进当前语言后再画进 SVG。
+  const src = preview(doc.pres, s, null, {
+    prompts: (shape) => {
+      const p = getPlaceholderPrompt(shape);
+      return p == null ? p : t(p);
+    },
+  });
   cache.set(part, { key, src });
   return src;
 }

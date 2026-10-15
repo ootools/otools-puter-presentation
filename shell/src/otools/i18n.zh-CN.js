@@ -1582,6 +1582,31 @@ export default {
   'Zoom out': '缩小',
   'Zoom Transition': '缩放切换',
   'Zoom…': '缩放…',
+  // —— 幻灯片版式占位提示（由 lib/pptx 的 getPlaceholderPrompt 产出，经渲染层画进 SVG）——
+  'Click to add title': '单击以添加标题',
+  'Click to add subtitle': '单击以添加副标题',
+  'Click to add text': '单击以添加文本',
+  'Click to add a picture': '单击以添加图片',
+  'Click to add content': '单击以添加内容',
+  'Click to add a table': '单击以添加表格',
+  'Click to add a chart': '单击以添加图表',
+  'Click to add a diagram': '单击以添加图示',
+  'Click to add media': '单击以添加媒体',
+  // —— 母版 / 版式视图里空占位符显示的类型名 ——
+  'Footer': '页脚',
+  'Header': '页眉',
+  'Picture': '图片',
+  'Table': '表格',
+  'Chart': '图表',
+  'SmartArt': 'SmartArt',
+  'Media': '媒体',
+  'Clip Art': '剪贴画',
+  'Slide Image': '幻灯片图片',
+  'Text': '文本',
+  // —— 用户报的漏译词条 ——
+  'Accessibility: Investigate': '辅助功能：检查',
+  'Saved on this device': '已保存到此设备',
+  'Search': '搜索',
 };
 ;
 

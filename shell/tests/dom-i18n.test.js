@@ -12,10 +12,19 @@ import {
 } from '../src/otools/dom-i18n.js';
 import { locale, registerCatalog, setPreference } from '../src/otools/i18n.js';
 
-/** 挂一棵干净的树，装一个只认得两条词的假语言。 */
+/** 挂一棵干净的树，装一个只认得几条词的假语言。 */
 function mount(html) {
   document.body.innerHTML = html;
-  registerCatalog('zz-ZZ', { Save: '保存', Cancel: '取消', Open: '打开' }, []);
+  registerCatalog(
+    'zz-ZZ',
+    {
+      Save: '保存', Cancel: '取消', Open: '打开',
+      // 表单控件占位符 / 版式提示语，用来测 placeholder 翻译与 SVG 提示翻译
+      'Search presentations': '搜索演示文稿',
+      'Click to add notes': '单击以添加备注',
+    },
+    [],
+  );
   setPreference('zz-ZZ');
   resetMisses();
   disposeDomTranslation();
@@ -77,6 +86,37 @@ describe('切语言可逆', () => {
     setPreference('zz-ZZ');
     translateAll();
     expect(document.querySelector('button').textContent).toBe('取消');
+  });
+
+  it('反复切语言多次仍正确还原（MutationObserver 不再删掉英文原文）', async () => {
+    // 复现「语言切换无效」：旧实现会在翻译层自己写入文本后，被 MutationObserver
+    // 当成上游重渲染而删掉英文原文，导致再切回英文时无法还原。
+    mount('<div><button>Save</button></div>');
+    expect(document.querySelector('button').textContent).toBe('保存');
+    // 等 install 触发的 MutationObserver 回调真正跑完（真实时序里它异步发生）
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    setPreference('en-US'); translateAll();
+    expect(document.querySelector('button').textContent).toBe('Save');
+    setPreference('zz-ZZ'); translateAll();
+    expect(document.querySelector('button').textContent).toBe('保存');
+    setPreference('en-US'); translateAll();
+    expect(document.querySelector('button').textContent).toBe('Save');
+  });
+});
+
+describe('表单控件的展示属性', () => {
+  it('INPUT / TEXTAREA 的 placeholder 仍会被翻译（内容不翻）', () => {
+    mount(
+      '<div>'
+      + '<input placeholder="Search presentations" value="My notes">'
+      + '<textarea placeholder="Click to add notes">User typed text</textarea>'
+      + '</div>',
+    );
+    expect(document.querySelector('input').getAttribute('placeholder')).toBe('搜索演示文稿');
+    expect(document.querySelector('textarea').getAttribute('placeholder')).toBe('单击以添加备注');
+    // 用户内容（值 / 文本）绝不能被翻
+    expect(document.querySelector('input').value).toBe('My notes');
+    expect(document.querySelector('textarea').textContent).toBe('User typed text');
   });
 });
 

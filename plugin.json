@@ -23,5 +23,5 @@
   "screenshots": [],
   "summary": "Presentation（HeyPuter/everything 的演示文稿应用）的 OTools 插件版：幻灯片、母版、动画、图表与 pptx 导入导出。文稿是本机目录里的普通文件，不走任何云账号。",
   "uuid": "otools-puter-presentation",
-  "version": "0.1.2"
+  "version": "0.1.3"
 }
